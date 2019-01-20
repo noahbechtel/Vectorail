@@ -37,6 +37,7 @@ let checker = new PIXI.Sprite.fromImage('images/checker.png')
 let logo = new PIXI.Sprite.fromImage('images/rail.png')
 let direct = new PIXI.Text('Use A+D/J+L to Move', style)
 let start = new PIXI.Sprite.fromImage('images/start.png')
+let go = new PIXI.Sprite.fromImage('images/go.png')
 let count = new PIXI.Text('3', style)
 
 let started = false
@@ -71,6 +72,7 @@ sprite1.position.copy(values[0])
 sprite1.anchor.set(0.5)
 sprite1.pivot.set(0.5)
 sprite1.scale.set(0.5)
+sprite1.rotation = 180
 
 logo.position.set(200, 75)
 logo.anchor.set(0.5)
@@ -91,6 +93,7 @@ sprite2.position.copy(values[0])
 sprite2.anchor.set(0.5)
 sprite2.pivot.set(0.5)
 sprite2.scale.set(0.5)
+sprite2.rotation = 180
 
 direct.x = 700
 direct.y = 900
@@ -106,13 +109,13 @@ count.position.set(900, 800)
 
 function onClick () {
   app.stage.removeChild(start)
-  count.position.set(900, 800)
-  count = new PIXI.Text('GO!', style)
   setTimeout(() => {
-    app.stage.addChild(count)
+    go.position.set(825, 750)
+    app.stage.addChild(go)
     started = true
   }, 1000)
 }
+let text
 app.stage.addChild(
   checker,
   graphics,
@@ -125,7 +128,7 @@ app.stage.addChild(
   start
 )
 let finished = false
-let n = 0
+let n = 1
 let nVal = values[n]
 let pVal
 if (values[n - 1]) pVal = values[n - 1]
@@ -139,7 +142,7 @@ const { px, y: py } = pVal
 
 let running = false
 
-let n1 = 0
+let n1 = 1
 let nVal1 = values[n]
 let pVal1
 if (values[n - 1]) pVal1 = values[n - 1]
@@ -178,6 +181,7 @@ l.register_combo({
   prevent_default: true,
   prevent_repeat: false
 })
+
 function update1 () {
   if (!running && started) {
     running = true
@@ -236,7 +240,6 @@ function update2 () {
       text.x = 1500
       text.y = 180
       finished = true
-
       app.stage.addChild(text)
     }
     checkPlacing()
@@ -250,7 +253,9 @@ function update2 () {
   }
 }
 const checkPlacing = () => {
-  if (laps1 <= laps && n1 >= n) {
+  const p1Pos = laps * values.length + (values.length - n)
+  const p2Pos = laps1 * values.length + (values.length - n1)
+  if (p2Pos < p1Pos) {
     app.stage.removeChild(crown)
     crown.x = 1600
     crown.y = 320

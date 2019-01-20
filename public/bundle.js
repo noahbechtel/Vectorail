@@ -131,6 +131,7 @@ var checker = new PIXI.Sprite.fromImage('images/checker.png');
 var logo = new PIXI.Sprite.fromImage('images/rail.png');
 var direct = new PIXI.Text('Use A+D/J+L to Move', style);
 var start = new PIXI.Sprite.fromImage('images/start.png');
+var go = new PIXI.Sprite.fromImage('images/go.png');
 var count = new PIXI.Text('3', style);
 var started = false;
 var graphics = new PIXI.Graphics().lineStyle(3, 0xaaaaaa, 1).moveTo(550, 300).quadraticCurveTo(0, 600, 700, 600).quadraticCurveTo(800, 600, 900, 500).quadraticCurveTo(1000, 400, 1200, 600).quadraticCurveTo(1500, 875, 1300, 300).quadraticCurveTo(1200, 0, 550, 300);
@@ -157,6 +158,7 @@ sprite1.position.copy(values[0]);
 sprite1.anchor.set(0.5);
 sprite1.pivot.set(0.5);
 sprite1.scale.set(0.5);
+sprite1.rotation = 180;
 logo.position.set(200, 75);
 logo.anchor.set(0.5);
 logo.pivot.set(0.5);
@@ -173,6 +175,7 @@ sprite2.position.copy(values[0]);
 sprite2.anchor.set(0.5);
 sprite2.pivot.set(0.5);
 sprite2.scale.set(0.5);
+sprite2.rotation = 180;
 direct.x = 700;
 direct.y = 900;
 start.on('pointerdown', onClick);
@@ -185,17 +188,17 @@ count.position.set(900, 800);
 
 function onClick() {
   app.stage.removeChild(start);
-  count.position.set(900, 800);
-  count = new PIXI.Text('GO!', style);
   setTimeout(function () {
-    app.stage.addChild(count);
+    go.position.set(825, 750);
+    app.stage.addChild(go);
     started = true;
   }, 1000);
 }
 
+var text;
 app.stage.addChild(checker, graphics, sprite1, sprite2, logo, direct, player1logo, player2logo, start);
 var finished = false;
-var n = 0;
+var n = 1;
 var nVal = values[n];
 var pVal;
 if (values[n - 1]) pVal = values[n - 1];else {
@@ -209,7 +212,7 @@ var _pVal = pVal,
     px = _pVal.px,
     py = _pVal.y;
 var running = false;
-var n1 = 0;
+var n1 = 1;
 var nVal1 = values[n];
 var pVal1;
 if (values[n - 1]) pVal1 = values[n - 1];else {
@@ -318,7 +321,10 @@ function update2() {
 }
 
 var checkPlacing = function checkPlacing() {
-  if (laps1 <= laps && n1 >= n) {
+  var p1Pos = laps * values.length + (values.length - n);
+  var p2Pos = laps1 * values.length + (values.length - n1);
+
+  if (p2Pos < p1Pos) {
     app.stage.removeChild(crown);
     crown.x = 1600;
     crown.y = 320;
