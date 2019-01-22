@@ -132,9 +132,16 @@ var logo = new PIXI.Sprite.fromImage('images/rail.png');
 var direct = new PIXI.Text('Use A+D/J+L to Move', style);
 var start = new PIXI.Sprite.fromImage('images/start.png');
 var go = new PIXI.Sprite.fromImage('images/go.png');
-var count = new PIXI.Text('3', style);
+var count = new PIXI.Text('3', style); // window.addEventListener('load', function () {
+//   var svgObject = document.getElementById('svg').contentDocument
+//   var svg = svgObject.getElementById('svg')
+//   var g = svg.getElementById('svgg')
+//   console.log(g)
+// })
+
 var started = false;
-var graphics = new PIXI.Graphics().lineStyle(3, 0xaaaaaa, 1).moveTo(550, 300).quadraticCurveTo(0, 600, 700, 600).quadraticCurveTo(800, 600, 900, 500).quadraticCurveTo(1000, 400, 1200, 600).quadraticCurveTo(1500, 875, 1300, 300).quadraticCurveTo(1200, 0, 550, 300);
+var graphics = new PIXI.Graphics().lineStyle(3, 0xaaaaaa, 1).moveTo(550, 300).quadraticCurveTo(0, 600, 700, 600) // .quadraticCurveTo(800, 600, 900, 500)
+.quadraticCurveTo(1000, 400, 1200, 600).quadraticCurveTo(1500, 875, 1300, 300).quadraticCurveTo(1200, 0, 550, 300);
 var points = graphics.graphicsData[0].shape.points;
 var values = [];
 
@@ -181,7 +188,7 @@ direct.y = 900;
 start.on('pointerdown', onClick);
 start.position.set(900, 800);
 start.anchor.set(0.5);
-start.scale.set(0.5);
+start.scale.set(0.75);
 start.interactive = true;
 start.buttonMode = true;
 count.position.set(900, 800);
@@ -205,6 +212,7 @@ if (values[n - 1]) pVal = values[n - 1];else {
   pVal = values[n];
 }
 var vel = 1;
+var vel1 = 1;
 var _nVal = nVal,
     nx = _nVal.x,
     ny = _nVal.y;
@@ -220,36 +228,40 @@ if (values[n - 1]) pVal1 = values[n - 1];else {
 }
 var laps = 3;
 var laps1 = 3;
-var running1 = false; // SETUP
+var running1 = false;
+var p1timer = 0;
+var p2timer = 0; // SETUP
 // UPDATE POS
 
 a.register_combo({
   keys: 'a',
   on_keydown: update1,
   prevent_default: true,
-  prevent_repeat: false
+  prevent_repeat: true
 });
 d.register_combo({
   keys: 'd',
   on_keydown: update1,
   prevent_default: true,
-  prevent_repeat: false
+  prevent_repeat: true
 });
 j.register_combo({
   keys: 'j',
   on_keydown: update2,
   prevent_default: true,
-  prevent_repeat: false
+  prevent_repeat: true
 });
 l.register_combo({
   keys: 'l',
   on_keydown: update2,
   prevent_default: true,
-  prevent_repeat: false
+  prevent_repeat: true
 });
+var powerUp;
 
 function update1() {
   if (!running && started) {
+    console.log(vel, p1timer);
     running = true;
     TweenMax.to(sprite1, vel, {
       bezier: {
@@ -259,6 +271,13 @@ function update1() {
         autoRotate: ['x', 'y', 'rotation', -80, true]
       }
     });
+    nVal = values[n];
+
+    if (p1timer === 0) {
+      vel = 1;
+    } else {
+      p1timer--;
+    }
 
     if (n === values.length - 1) {
       n = 0;
@@ -275,10 +294,31 @@ function update1() {
       app.stage.addChild(text);
     }
 
-    nVal = values[n];
     if (values[n - 1]) pVal = values[n - 1];else {
       pVal = values[n];
     }
+
+    if (powerUp) {
+      if (powerUp.position.x === nVal.x && powerUp.position.y === nVal.y) {
+        switch (powerUp.type) {
+          case 1:
+            vel = 10;
+            p1timer = 30;
+            powerUp.visible = false;
+            app.stage.removeChild(powerUp);
+
+          case 2:
+            vel = 0.3;
+            p1timer = 30;
+            powerUp.visible = false;
+            app.stage.removeChild(powerUp);
+
+          default:
+            break;
+        }
+      }
+    }
+
     checkPlacing();
     running = false;
   }
@@ -287,7 +327,7 @@ function update1() {
 function update2() {
   if (!running && started) {
     running1 = true;
-    TweenMax.to(sprite2, vel, {
+    TweenMax.to(sprite2, vel1, {
       bezier: {
         type: 'thrubasic',
         values: [pVal1, nVal1],
@@ -295,6 +335,12 @@ function update2() {
         autoRotate: ['x', 'y', 'rotation', -80, true]
       }
     });
+
+    if (p2timer === 0) {
+      vel1 = 1;
+    } else {
+      p2timer--;
+    }
 
     if (n1 === values.length - 1) {
       n1 = 0;
@@ -320,6 +366,29 @@ function update2() {
   }
 }
 
+if (powerUp) {
+  if (powerUp.position.x === nVal1.x && powerUp.position.y === nVal1.y) {
+    console.log('shits');
+
+    switch (powerUp.type) {
+      case 1:
+        vel1 = 10;
+        p2timer = 30;
+        powerUp.visible = false;
+        app.stage.removeChild(powerUp);
+
+      case 2:
+        vel1 = 0.3;
+        p2timer = 30;
+        powerUp.visible = false;
+        app.stage.removeChild(powerUp);
+
+      default:
+        break;
+    }
+  }
+}
+
 var checkPlacing = function checkPlacing() {
   var p1Pos = laps * values.length + (values.length - n);
   var p2Pos = laps1 * values.length + (values.length - n1);
@@ -334,6 +403,33 @@ var checkPlacing = function checkPlacing() {
     crown.x = 1500;
     crown.y = 320;
     app.stage.addChild(crown);
+  }
+
+  var random = Math.floor(Math.random() * 100);
+
+  if (random > 66 && random < 69) {
+    var location = Math.floor(Math.random() * (+values.length - +0)) + +0;
+    var type = Math.floor(Math.random() * 10) % 2 === 0;
+
+    if (type) {
+      type = 1;
+    } else {
+      type = 2;
+    }
+
+    if (!powerUp) {
+      powerUp = new PIXI.Sprite.fromImage("images/powerUps/".concat(type, ".png"));
+      powerUp.position.set(values[location].x, values[location].y);
+      powerUp.type = type;
+      app.stage.addChild(powerUp);
+    } else {
+      if (!powerUp.visible) {
+        powerUp = new PIXI.Sprite.fromImage("images/powerUps/".concat(type, ".png"));
+        powerUp.position.set(values[location].x, values[location].y);
+        powerUp.type = type;
+        app.stage.addChild(powerUp);
+      }
+    }
   }
 }; // Assign events
 // document.addEventListener('mousedown', mousedown)

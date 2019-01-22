@@ -40,17 +40,24 @@ let start = new PIXI.Sprite.fromImage('images/start.png')
 let go = new PIXI.Sprite.fromImage('images/go.png')
 let count = new PIXI.Text('3', style)
 
+// window.addEventListener('load', function () {
+//   var svgObject = document.getElementById('svg').contentDocument
+//   var svg = svgObject.getElementById('svg')
+//   var g = svg.getElementById('svgg')
+//   console.log(g)
+// })
+
 let started = false
-var graphics = new PIXI.Graphics()
+const graphics = new PIXI.Graphics()
   .lineStyle(3, 0xaaaaaa, 1)
   .moveTo(550, 300)
   .quadraticCurveTo(0, 600, 700, 600)
-  .quadraticCurveTo(800, 600, 900, 500)
+  // .quadraticCurveTo(800, 600, 900, 500)
   .quadraticCurveTo(1000, 400, 1200, 600)
   .quadraticCurveTo(1500, 875, 1300, 300)
   .quadraticCurveTo(1200, 0, 550, 300)
 
-var points = graphics.graphicsData[0].shape.points
+const points = graphics.graphicsData[0].shape.points
 var values = []
 
 for (var i = 0; i < points.length; i += 2) {
@@ -101,7 +108,7 @@ direct.y = 900
 start.on('pointerdown', onClick)
 start.position.set(900, 800)
 start.anchor.set(0.5)
-start.scale.set(0.5)
+start.scale.set(0.75)
 start.interactive = true
 start.buttonMode = true
 
@@ -136,6 +143,7 @@ else {
   pVal = values[n]
 }
 let vel = 1
+let vel1 = 1
 
 const { x: nx, y: ny } = nVal
 const { px, y: py } = pVal
@@ -152,6 +160,8 @@ else {
 let laps = 3
 let laps1 = 3
 let running1 = false
+let p1timer = 0
+let p2timer = 0
 
 // SETUP
 
@@ -161,29 +171,30 @@ a.register_combo({
   keys: 'a',
   on_keydown: update1,
   prevent_default: true,
-  prevent_repeat: false
+  prevent_repeat: true
 })
 d.register_combo({
   keys: 'd',
   on_keydown: update1,
   prevent_default: true,
-  prevent_repeat: false
+  prevent_repeat: true
 })
 j.register_combo({
   keys: 'j',
   on_keydown: update2,
   prevent_default: true,
-  prevent_repeat: false
+  prevent_repeat: true
 })
 l.register_combo({
   keys: 'l',
   on_keydown: update2,
   prevent_default: true,
-  prevent_repeat: false
+  prevent_repeat: true
 })
-
+let powerUp
 function update1 () {
   if (!running && started) {
+    console.log(vel, p1timer)
     running = true
     TweenMax.to(sprite1, vel, {
       bezier: {
@@ -193,6 +204,14 @@ function update1 () {
         autoRotate: ['x', 'y', 'rotation', -80, true]
       }
     })
+
+    nVal = values[n]
+
+    if (p1timer === 0) {
+      vel = 1
+    } else {
+      p1timer--
+    }
     if (n === values.length - 1) {
       n = 0
       laps--
@@ -207,10 +226,29 @@ function update1 () {
       finished = true
       app.stage.addChild(text)
     }
-    nVal = values[n]
+
     if (values[n - 1]) pVal = values[n - 1]
     else {
       pVal = values[n]
+    }
+    if (powerUp) {
+      if (powerUp.position.x === nVal.x && powerUp.position.y === nVal.y) {
+        switch (powerUp.type) {
+          case 1:
+            vel = 10
+            p1timer = 30
+            powerUp.visible = false
+            app.stage.removeChild(powerUp)
+          case 2:
+            vel = 0.3
+            p1timer = 30
+            powerUp.visible = false
+            app.stage.removeChild(powerUp)
+
+          default:
+            break
+        }
+      }
     }
     checkPlacing()
     running = false
@@ -220,7 +258,7 @@ function update1 () {
 function update2 () {
   if (!running && started) {
     running1 = true
-    TweenMax.to(sprite2, vel, {
+    TweenMax.to(sprite2, vel1, {
       bezier: {
         type: 'thrubasic',
         values: [pVal1, nVal1],
@@ -228,6 +266,12 @@ function update2 () {
         autoRotate: ['x', 'y', 'rotation', -80, true]
       }
     })
+
+    if (p2timer === 0) {
+      vel1 = 1
+    } else {
+      p2timer--
+    }
     if (n1 === values.length - 1) {
       n1 = 0
       laps1--
@@ -252,6 +296,26 @@ function update2 () {
     running1 = false
   }
 }
+if (powerUp) {
+  if (powerUp.position.x === nVal1.x && powerUp.position.y === nVal1.y) {
+    console.log('shits')
+    switch (powerUp.type) {
+      case 1:
+        vel1 = 10
+        p2timer = 30
+        powerUp.visible = false
+        app.stage.removeChild(powerUp)
+      case 2:
+        vel1 = 0.3
+        p2timer = 30
+        powerUp.visible = false
+        app.stage.removeChild(powerUp)
+
+      default:
+        break
+    }
+  }
+}
 const checkPlacing = () => {
   const p1Pos = laps * values.length + (values.length - n)
   const p2Pos = laps1 * values.length + (values.length - n1)
@@ -265,6 +329,31 @@ const checkPlacing = () => {
     crown.x = 1500
     crown.y = 320
     app.stage.addChild(crown)
+  }
+
+  let random = Math.floor(Math.random() * 100)
+
+  if (random > 66 && random < 69) {
+    let location = Math.floor(Math.random() * (+values.length - +0)) + +0
+    let type = Math.floor(Math.random() * 10) % 2 === 0
+    if (type) {
+      type = 1
+    } else {
+      type = 2
+    }
+    if (!powerUp) {
+      powerUp = new PIXI.Sprite.fromImage(`images/powerUps/${type}.png`)
+      powerUp.position.set(values[location].x, values[location].y)
+      powerUp.type = type
+      app.stage.addChild(powerUp)
+    } else {
+      if (!powerUp.visible) {
+        powerUp = new PIXI.Sprite.fromImage(`images/powerUps/${type}.png`)
+        powerUp.position.set(values[location].x, values[location].y)
+        powerUp.type = type
+        app.stage.addChild(powerUp)
+      }
+    }
   }
 }
 
