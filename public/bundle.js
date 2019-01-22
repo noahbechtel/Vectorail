@@ -260,7 +260,7 @@ l.register_combo({
 var powerUp;
 
 function update1() {
-  if (powerUp) {
+  if (powerUp && powerUp.visible) {
     if (powerUp.position.x === nVal.x && powerUp.position.y === nVal.y) {
       switch (powerUp.type) {
         case 1:
@@ -324,16 +324,16 @@ function update1() {
 function update2() {
   nVal1 = values[n1];
 
-  if (powerUp && powerUp.position) {
+  if (powerUp && powerUp.position && powerUp.visible) {
     if (powerUp.position.x === nVal1.x && powerUp.position.y === nVal1.y) {
       switch (powerUp.type) {
         case 1:
-          n = n - 10;
+          n1 = n1 - 10;
           powerUp.visible = false;
           app.stage.removeChild(powerUp);
 
         case 2:
-          n = n + 10;
+          n1 = n1 + 10;
           powerUp.visible = false;
           app.stage.removeChild(powerUp);
 
