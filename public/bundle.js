@@ -138,6 +138,7 @@ var count = new PIXI.Text('3', style); // window.addEventListener('load', functi
 //   var g = svg.getElementById('svgg')
 //   console.log(g)
 // })
+// snap
 
 var started = false;
 var graphics = new PIXI.Graphics().lineStyle(3, 0xaaaaaa, 1).moveTo(550, 300).quadraticCurveTo(0, 600, 300, 600).quadraticCurveTo(600, 600, 900, 500).quadraticCurveTo(1100, 400, 1200, 600).quadraticCurveTo(1450, 1000, 1300, 300).quadraticCurveTo(1200, 0, 550, 300);
@@ -259,7 +260,7 @@ l.register_combo({
 var powerUp;
 
 function update1() {
-  if (powerUp && powerUp.visible) {
+  if (powerUp) {
     if (powerUp.position.x === nVal.x && powerUp.position.y === nVal.y) {
       switch (powerUp.type) {
         case 1:
@@ -323,7 +324,7 @@ function update1() {
 function update2() {
   nVal1 = values[n1];
 
-  if (powerUp && powerUp.position && powerUp.visible) {
+  if (powerUp && powerUp.position) {
     if (powerUp.position.x === nVal1.x && powerUp.position.y === nVal1.y) {
       switch (powerUp.type) {
         case 1:

@@ -49,6 +49,8 @@ let count = new PIXI.Text('3', style)
 //   console.log(g)
 // })
 
+// snap
+
 let started = false
 const graphics = new PIXI.Graphics()
   .lineStyle(3, 0xaaaaaa, 1)
@@ -207,7 +209,7 @@ right.register_combo({
 })
 let powerUp
 function update1 () {
-  if (powerUp && powerUp.visible) {
+  if (powerUp) {
     if (powerUp.position.x === nVal.x && powerUp.position.y === nVal.y) {
       switch (powerUp.type) {
         case 1:
@@ -269,7 +271,7 @@ function update1 () {
 function update2 () {
   nVal1 = values[n1]
 
-  if (powerUp && powerUp.position && powerUp.visible) {
+  if (powerUp && powerUp.position) {
     if (powerUp.position.x === nVal1.x && powerUp.position.y === nVal1.y) {
       switch (powerUp.type) {
         case 1:
