@@ -140,8 +140,7 @@ var count = new PIXI.Text('3', style); // window.addEventListener('load', functi
 // })
 
 var started = false;
-var graphics = new PIXI.Graphics().lineStyle(3, 0xaaaaaa, 1).moveTo(550, 300).quadraticCurveTo(0, 600, 700, 600) // .quadraticCurveTo(800, 600, 900, 500)
-.quadraticCurveTo(1000, 400, 1200, 600).quadraticCurveTo(1500, 875, 1300, 300).quadraticCurveTo(1200, 0, 550, 300);
+var graphics = new PIXI.Graphics().lineStyle(3, 0xaaaaaa, 1).moveTo(550, 300).quadraticCurveTo(0, 600, 300, 600).quadraticCurveTo(600, 600, 900, 500).quadraticCurveTo(1100, 400, 1200, 600).quadraticCurveTo(1450, 1000, 1300, 300).quadraticCurveTo(1200, 0, 550, 300);
 var points = graphics.graphicsData[0].shape.points;
 var values = [];
 
@@ -260,8 +259,28 @@ l.register_combo({
 var powerUp;
 
 function update1() {
+  if (powerUp && powerUp.visible) {
+    if (powerUp.position.x === nVal.x && powerUp.position.y === nVal.y) {
+      switch (powerUp.type) {
+        case 1:
+          n = n - 10;
+          powerUp.visible = false;
+          app.stage.removeChild(powerUp);
+
+        case 2:
+          n = n + 10;
+          powerUp.visible = false;
+          app.stage.removeChild(powerUp);
+
+        default:
+          break;
+      }
+    }
+  }
+
+  nVal = values[n];
+
   if (!running && started) {
-    console.log(vel, p1timer);
     running = true;
     TweenMax.to(sprite1, vel, {
       bezier: {
@@ -271,7 +290,6 @@ function update1() {
         autoRotate: ['x', 'y', 'rotation', -80, true]
       }
     });
-    nVal = values[n];
 
     if (p1timer === 0) {
       vel = 1;
@@ -297,34 +315,33 @@ function update1() {
     if (values[n - 1]) pVal = values[n - 1];else {
       pVal = values[n];
     }
-
-    if (powerUp) {
-      if (powerUp.position.x === nVal.x && powerUp.position.y === nVal.y) {
-        switch (powerUp.type) {
-          case 1:
-            vel = 10;
-            p1timer = 30;
-            powerUp.visible = false;
-            app.stage.removeChild(powerUp);
-
-          case 2:
-            vel = 0.3;
-            p1timer = 30;
-            powerUp.visible = false;
-            app.stage.removeChild(powerUp);
-
-          default:
-            break;
-        }
-      }
-    }
-
     checkPlacing();
     running = false;
   }
 }
 
 function update2() {
+  nVal1 = values[n1];
+
+  if (powerUp && powerUp.position && powerUp.visible) {
+    if (powerUp.position.x === nVal1.x && powerUp.position.y === nVal1.y) {
+      switch (powerUp.type) {
+        case 1:
+          n = n - 10;
+          powerUp.visible = false;
+          app.stage.removeChild(powerUp);
+
+        case 2:
+          n = n + 10;
+          powerUp.visible = false;
+          app.stage.removeChild(powerUp);
+
+        default:
+          break;
+      }
+    }
+  }
+
   if (!running && started) {
     running1 = true;
     TweenMax.to(sprite2, vel1, {
@@ -358,34 +375,10 @@ function update2() {
     }
 
     checkPlacing();
-    nVal1 = values[n1];
     if (values[n1 - 1]) pVal1 = values[n1 - 1];else {
       pVal1 = values[n1];
     }
     running1 = false;
-  }
-}
-
-if (powerUp) {
-  if (powerUp.position.x === nVal1.x && powerUp.position.y === nVal1.y) {
-    console.log('shits');
-
-    switch (powerUp.type) {
-      case 1:
-        vel1 = 10;
-        p2timer = 30;
-        powerUp.visible = false;
-        app.stage.removeChild(powerUp);
-
-      case 2:
-        vel1 = 0.3;
-        p2timer = 30;
-        powerUp.visible = false;
-        app.stage.removeChild(powerUp);
-
-      default:
-        break;
-    }
   }
 }
 
@@ -421,11 +414,15 @@ var checkPlacing = function checkPlacing() {
       powerUp = new PIXI.Sprite.fromImage("images/powerUps/".concat(type, ".png"));
       powerUp.position.set(values[location].x, values[location].y);
       powerUp.type = type;
+      powerUp.anchor.set(0.5);
+      powerUp.scale.set(1.5);
       app.stage.addChild(powerUp);
     } else {
       if (!powerUp.visible) {
         powerUp = new PIXI.Sprite.fromImage("images/powerUps/".concat(type, ".png"));
         powerUp.position.set(values[location].x, values[location].y);
+        powerUp.anchor.set(0.5);
+        powerUp.scale.set(1.5);
         powerUp.type = type;
         app.stage.addChild(powerUp);
       }
