@@ -4,8 +4,6 @@ var a = new window.keypress.Listener()
 var d = new window.keypress.Listener()
 var j = new window.keypress.Listener()
 var l = new window.keypress.Listener()
-var left = new window.keypress.Listener()
-var right= new window.keypress.Listener()
 
 var vw = window.innerWidth
 var vh = window.innerHeight
@@ -195,21 +193,9 @@ l.register_combo({
   prevent_default: true,
   prevent_repeat: true
 })
-left.register_combo({
-  keys: 'l',
-  on_keydown: update1,
-  prevent_default: true,
-  prevent_repeat: true
-})
-right.register_combo({
-  keys: 'l',
-  on_keydown: update2,
-  prevent_default: true,
-  prevent_repeat: true
-})
 let powerUp
 function update1 () {
-  if (powerUp) {
+  if (powerUp && powerUp.visible) {
     if (powerUp.position.x === nVal.x && powerUp.position.y === nVal.y) {
       switch (powerUp.type) {
         case 1:
@@ -271,15 +257,15 @@ function update1 () {
 function update2 () {
   nVal1 = values[n1]
 
-  if (powerUp && powerUp.position) {
+  if (powerUp && powerUp.position && powerUp.visible) {
     if (powerUp.position.x === nVal1.x && powerUp.position.y === nVal1.y) {
       switch (powerUp.type) {
         case 1:
-          n = n - 10
+          n1 = n1 - 10
           powerUp.visible = false
           app.stage.removeChild(powerUp)
         case 2:
-          n = n + 10
+          n1 = n1 + 10
           powerUp.visible = false
           app.stage.removeChild(powerUp)
 
