@@ -4,6 +4,8 @@ var a = new window.keypress.Listener()
 var d = new window.keypress.Listener()
 var j = new window.keypress.Listener()
 var l = new window.keypress.Listener()
+var left = new window.keypress.Listener()
+var right= new window.keypress.Listener()
 
 var vw = window.innerWidth
 var vh = window.innerHeight
@@ -186,6 +188,18 @@ j.register_combo({
   prevent_repeat: true
 })
 l.register_combo({
+  keys: 'l',
+  on_keydown: update2,
+  prevent_default: true,
+  prevent_repeat: true
+})
+left.register_combo({
+  keys: 'l',
+  on_keydown: update1,
+  prevent_default: true,
+  prevent_repeat: true
+})
+right.register_combo({
   keys: 'l',
   on_keydown: update2,
   prevent_default: true,
